@@ -74,5 +74,5 @@ void AOptimizedGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//UnlitModeOn();
+	UnlitModeOn();
 }
