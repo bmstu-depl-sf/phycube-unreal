@@ -3,7 +3,7 @@
 
 ## Установка
 1) Скачать [архив](https://disk.yandex.com/d/NRNFiOGr6U3fsw)
-2) Распакавать архив
+2) Распаковать архив
 ## Запуск
 1) Запустить в папке HTML5 файл HTML5LaunchHelper.exe
 2) Введите в адресной строке http://localhost:8000//SELF-HTML5-Shipping.html
