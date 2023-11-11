@@ -15,4 +15,6 @@ class SELF_API UCustomVectorLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 		UFUNCTION(BlueprintCallable, Category = "SELF extensions")
 		static FVector RadialToVector(float alpha, float beta, float force);
+	UFUNCTION(BlueprintCallable, Category = "SELF extensions")
+		static FVector ChangeDirectionByCharge(FVector ElectricForce, float Charge);
 };

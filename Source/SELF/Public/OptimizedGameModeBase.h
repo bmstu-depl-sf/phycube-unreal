@@ -13,10 +13,13 @@ UCLASS()
 class SELF_API AOptimizedGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
 		UFUNCTION(BlueprintCallable, Category = "GraphicAPI")
 		virtual void UnlitModeOn();
 		UFUNCTION(BlueprintCallable, Category = "GraphicAPI")
 		virtual void UnlitModeOff();
+
 protected:
-	virtual void BeginPlay() override;
+		virtual void BeginPlay() override;
 };

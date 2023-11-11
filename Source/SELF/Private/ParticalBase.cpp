@@ -6,13 +6,30 @@
 // Sets default values
 AParticalBase::AParticalBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 
-	SphereCollision->SetupAttachment(RootComponent);
+	//SphereCollision->SetupAttachment(RootComponent);
 	SphereCollision->SetGenerateOverlapEvents(true);
+	SphereCollision->SetCollisionProfileName("Partical");
+	SphereCollision->SetSimulatePhysics(true);
+	SphereCollision->SetMassScale("", Charge);
+	SphereCollision->SetEnableGravity(false);
+	SphereCollision->SetLinearDamping(0.0);
+	//SetRootComponent(SphereCollision);
+}
+
+FVector AParticalBase::ChangeDirectionByCharge(FVector ElectricForce, float Sight)
+{
+	if (Sight > 0.0)
+	{
+		ElectricForce.X = ElectricForce.X * (-1.0);
+		ElectricForce.Y = ElectricForce.Y * (-1.0);
+		ElectricForce.Z = ElectricForce.Z * (-1.0);
+	}
+
+	return ElectricForce;
 }
 
 // Called when the game starts or when spawned
@@ -21,6 +38,8 @@ void AParticalBase::BeginPlay()
 	Super::BeginPlay();
 
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AParticalBase::OnOverlapBegin);
+
+	ElectricForce = ChangeDirectionByCharge(ElectricForce, Sight);
 }
 
 // Called every frame
@@ -28,7 +47,12 @@ void AParticalBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AddMovement(Speed);
+	SphereCollision->AddForce(ElectricForce, "None", true);
+}
+
+void AParticalBase::UpdateElectricForce(FVector Force)
+{
+	this->ElectricForce = ChangeDirectionByCharge(Force, Sight);;
 }
 
 void AParticalBase::AddMovement(float LSpeed)
@@ -48,4 +72,13 @@ void AParticalBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		this->Destroy();
 	}
+}
+
+void AParticalBase::UpdateInitSpeed(float Speed)
+{
+	InitSpeed = Speed;
+	FVector SpeedVector;
+
+	SpeedVector.Set(InitSpeed, 0.0, 0.0);
+	SphereCollision->AddImpulse(SpeedVector, "None", true);
 }

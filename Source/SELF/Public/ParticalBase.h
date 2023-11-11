@@ -13,28 +13,43 @@ class SELF_API AParticalBase : public APawn
 {
 	GENERATED_BODY()
 	
-public:	
 	// Sets default values for this actor's properties
 	AParticalBase();
 
+public:	
+	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	void UpdateElectricForce(FVector Force);
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	void UpdateInitSpeed(float Speed);
+
 protected:
-	// Called when the game starts or when spawned
+	UFUNCTION()
+	FVector ChangeDirectionByCharge(FVector ElectricForce, float Sight);
+
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USphereComponent *SphereCollision;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InitSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector ElectricForce;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float Speed;
+	float Charge;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float Sight;
 
 	UFUNCTION()
 	void AddMovement(float LSpeed);
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 };

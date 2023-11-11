@@ -8,7 +8,7 @@ FVector UCustomVectorLibrary::RadialToVector(float alpha, float beta, float forc
 {
 	FVector vector;
 
-	if (alpha < 0)
+	if (alpha < 0.0)
 		alpha -= 90;
 	else
 		alpha = 90 - alpha;
@@ -21,4 +21,16 @@ FVector UCustomVectorLibrary::RadialToVector(float alpha, float beta, float forc
 	vector.Z = force * FMath::Cos(alpha);
 
 	return vector;
+}
+
+FVector UCustomVectorLibrary::ChangeDirectionByCharge(FVector ElectricForce, float Charge)
+{
+	if (Charge > 0.0)
+	{
+		ElectricForce.X = ElectricForce.X * (-1.0);
+		ElectricForce.Y = ElectricForce.Y * (-1.0);
+		ElectricForce.Z = ElectricForce.Z * (-1.0);
+	}
+
+	return ElectricForce;
 }
