@@ -18,6 +18,9 @@ AParticalBase::AParticalBase()
 	SphereCollision->SetEnableGravity(false);
 	SphereCollision->SetLinearDamping(0.0);
 	//SetRootComponent(SphereCollision);
+	// Следующим кодом заменить SphereCollision->SetMassScale("", Charge);
+	//SphereCollision->BodyInstance.bOverrideMass = true;
+	//SphereCollision->BodyInstance.SetMassOverride(Charge);
 }
 
 FVector AParticalBase::ChangeDirectionByCharge(FVector ElectricForce, float Sight)
