@@ -25,12 +25,30 @@ public:
 	void UpdateElectricForce(FVector Force);
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
 	void UpdateInitSpeed(float Speed);
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//bool IsTrailOn;
+	//UPROPERTY(EditDefaultsOnly, Category = "Partical Parameters")
+	//TSubclassOf<AActor> TrailClass;
 
 protected:
 	UFUNCTION()
 	FVector ChangeDirectionByCharge(FVector ElectricForce, float Sight);
 
+	UFUNCTION()
+	FVector AddMassOnVector(FVector Force);
+
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+		void AddMovement(float LSpeed);
+
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	//UFUNCTION()
+	//	void AddTrail();
+
+	//virtual void Destroyed() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USphereComponent *SphereCollision;
@@ -47,9 +65,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Sight;
 
-	UFUNCTION()
-	void AddMovement(float LSpeed);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float Mass;
 
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	//float TrailTimer;
+
+	//FVector CurrentPosition;
+
+	//TArray<AActor*> Trails;
+
+	//FTimerHandle TrailTimerHandle;
 };

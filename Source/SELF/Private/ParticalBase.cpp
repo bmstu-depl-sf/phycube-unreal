@@ -2,6 +2,7 @@
 
 #include "ParticalBase.h"
 #include "HiddenWall.h"
+//#include "Trail.h"
 
 // Sets default values
 AParticalBase::AParticalBase()
@@ -14,13 +15,13 @@ AParticalBase::AParticalBase()
 	SphereCollision->SetGenerateOverlapEvents(true);
 	SphereCollision->SetCollisionProfileName("Partical");
 	SphereCollision->SetSimulatePhysics(true);
-	SphereCollision->SetMassScale("", Charge);
+	//SphereCollision->SetMassScale("", Charge);
 	SphereCollision->SetEnableGravity(false);
 	SphereCollision->SetLinearDamping(0.0);
 	//SetRootComponent(SphereCollision);
 	// Следующим кодом заменить SphereCollision->SetMassScale("", Charge);
-	//SphereCollision->BodyInstance.bOverrideMass = true;
-	//SphereCollision->BodyInstance.SetMassOverride(Charge);
+	SphereCollision->BodyInstance.bOverrideMass = true;
+	SphereCollision->BodyInstance.SetMassOverride(Mass);
 }
 
 FVector AParticalBase::ChangeDirectionByCharge(FVector ElectricForce, float Sight)
@@ -35,6 +36,15 @@ FVector AParticalBase::ChangeDirectionByCharge(FVector ElectricForce, float Sigh
 	return ElectricForce;
 }
 
+FVector AParticalBase::AddMassOnVector(FVector Force)
+{
+	Force.X = Force.X / Mass;
+	Force.Y = Force.Y / Mass;
+	Force.Z = Force.Z / Mass;
+
+	return Force;
+}
+
 // Called when the game starts or when spawned
 void AParticalBase::BeginPlay()
 {
@@ -43,6 +53,10 @@ void AParticalBase::BeginPlay()
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AParticalBase::OnOverlapBegin);
 
 	ElectricForce = ChangeDirectionByCharge(ElectricForce, Sight);
+
+	//CurrentPosition = GetActorLocation();
+
+	//GetWorldTimerManager().SetTimer(TrailTimerHandle, this, &AParticalBase::AddTrail, TrailTimer, true);
 }
 
 // Called every frame
@@ -55,7 +69,8 @@ void AParticalBase::Tick(float DeltaTime)
 
 void AParticalBase::UpdateElectricForce(FVector Force)
 {
-	this->ElectricForce = ChangeDirectionByCharge(Force, Sight);;
+	ElectricForce = ChangeDirectionByCharge(Force, Sight);
+	ElectricForce = AddMassOnVector(ElectricForce);
 }
 
 void AParticalBase::AddMovement(float LSpeed)
@@ -85,3 +100,39 @@ void AParticalBase::UpdateInitSpeed(float Speed)
 	SpeedVector.Set(InitSpeed, 0.0, 0.0);
 	SphereCollision->AddImpulse(SpeedVector, "None", true);
 }
+/*
+void AParticalBase::AddTrail()
+{
+	if (!IsTrailOn)
+	{
+		GetWorldTimerManager().ClearTimer(TrailTimerHandle);
+		return;
+	}
+	
+
+	FVector PreviousPosition;
+	ATrail* trail;
+
+	PreviousPosition = CurrentPosition;
+	CurrentPosition = GetActorLocation();
+
+	trail = GetWorld()->SpawnActor<ATrail>(TrailClass, GetActorTransform());
+	
+	if (trail != nullptr)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("The Actor's name is"));
+		//trail->SetPoints(PreviousPosition, CurrentPosition);
+		//Trails.Add(tmp);
+	}
+}
+
+void AParticalBase::Destroyed()
+{
+	GetWorldTimerManager().ClearTimer(TrailTimerHandle);
+
+	for (size_t i = 0; i < Trails.Num(); i++)
+	{
+		Trails[i]->Destroy();
+	}
+}
+*/
