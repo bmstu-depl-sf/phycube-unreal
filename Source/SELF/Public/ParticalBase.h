@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+// All characteristcs are multilply on 1e19
 
 #pragma once
 
@@ -22,52 +23,45 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
-	void UpdateElectricForce(FVector Force);
+	void UpdateElectricForce(FVector Strength);
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
-	void UpdateInitSpeed(float Speed);
+	void UpdateInitImpulse(float Impulse);
+	/* Depricated
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//bool IsTrailOn;
 	//UPROPERTY(EditDefaultsOnly, Category = "Partical Parameters")
 	//TSubclassOf<AActor> TrailClass;
-
+	*/
 protected:
-	UFUNCTION()
-	FVector ChangeDirectionByCharge(FVector ElectricForce, float Sight);
-
-	UFUNCTION()
-	FVector AddMassOnVector(FVector Force);
 
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-		void AddMovement(float LSpeed);
-
-	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	/* Depricated
 	//UFUNCTION()
 	//	void AddTrail();
 
 	//virtual void Destroyed() override;
+	*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USphereComponent *SphereCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InitSpeed;
+	float InitImpulse;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector ElectricForce;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float Charge;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float Sight;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Mass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float Charge;
+
+	/* Depricated
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	//float TrailTimer;
 
@@ -76,4 +70,5 @@ protected:
 	//TArray<AActor*> Trails;
 
 	//FTimerHandle TrailTimerHandle;
+	*/
 };

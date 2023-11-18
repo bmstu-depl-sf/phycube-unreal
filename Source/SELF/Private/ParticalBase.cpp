@@ -4,6 +4,8 @@
 #include "HiddenWall.h"
 //#include "Trail.h"
 
+#define MASS_INDEX 1e-12
+
 // Sets default values
 AParticalBase::AParticalBase()
 {
@@ -15,34 +17,14 @@ AParticalBase::AParticalBase()
 	SphereCollision->SetGenerateOverlapEvents(true);
 	SphereCollision->SetCollisionProfileName("Partical");
 	SphereCollision->SetSimulatePhysics(true);
-	//SphereCollision->SetMassScale("", Charge);
 	SphereCollision->SetEnableGravity(false);
 	SphereCollision->SetLinearDamping(0.0);
 	//SetRootComponent(SphereCollision);
-	// Следующим кодом заменить SphereCollision->SetMassScale("", Charge);
+	
+	Mass *= MASS_INDEX;
+
 	SphereCollision->BodyInstance.bOverrideMass = true;
 	SphereCollision->BodyInstance.SetMassOverride(Mass);
-}
-
-FVector AParticalBase::ChangeDirectionByCharge(FVector ElectricForce, float Sight)
-{
-	if (Sight > 0.0)
-	{
-		ElectricForce.X = ElectricForce.X * (-1.0);
-		ElectricForce.Y = ElectricForce.Y * (-1.0);
-		ElectricForce.Z = ElectricForce.Z * (-1.0);
-	}
-
-	return ElectricForce;
-}
-
-FVector AParticalBase::AddMassOnVector(FVector Force)
-{
-	Force.X = Force.X / Mass;
-	Force.Y = Force.Y / Mass;
-	Force.Z = Force.Z / Mass;
-
-	return Force;
 }
 
 // Called when the game starts or when spawned
@@ -52,11 +34,11 @@ void AParticalBase::BeginPlay()
 
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AParticalBase::OnOverlapBegin);
 
-	ElectricForce = ChangeDirectionByCharge(ElectricForce, Sight);
-
+	/* Depricated
 	//CurrentPosition = GetActorLocation();
 
 	//GetWorldTimerManager().SetTimer(TrailTimerHandle, this, &AParticalBase::AddTrail, TrailTimer, true);
+	*/
 }
 
 // Called every frame
@@ -67,19 +49,10 @@ void AParticalBase::Tick(float DeltaTime)
 	SphereCollision->AddForce(ElectricForce, "None", true);
 }
 
-void AParticalBase::UpdateElectricForce(FVector Force)
+void AParticalBase::UpdateElectricForce(FVector Strength)
 {
-	ElectricForce = ChangeDirectionByCharge(Force, Sight);
-	ElectricForce = AddMassOnVector(ElectricForce);
-}
-
-void AParticalBase::AddMovement(float LSpeed)
-{
-	FVector DeltaLocation;
-
-	DeltaLocation.X = GetWorld()->GetDeltaSeconds() * LSpeed;
-
-	SphereCollision->AddWorldOffset(DeltaLocation, true);
+	// strength to force
+	ElectricForce = Charge * Strength;
 }
 
 void AParticalBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -92,15 +65,15 @@ void AParticalBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	}
 }
 
-void AParticalBase::UpdateInitSpeed(float Speed)
+void AParticalBase::UpdateInitImpulse(float Impulse)
 {
-	InitSpeed = Speed;
+	InitImpulse = Impulse;
 	FVector SpeedVector;
 
-	SpeedVector.Set(InitSpeed, 0.0, 0.0);
+	SpeedVector.Set(InitImpulse, 0.0, 0.0);
 	SphereCollision->AddImpulse(SpeedVector, "None", true);
 }
-/*
+/* Depricated
 void AParticalBase::AddTrail()
 {
 	if (!IsTrailOn)
