@@ -47,11 +47,12 @@ void AParticalBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	SphereCollision->AddForce(ElectricForce, "None", true);
+	UpdateLorentzForce();
+	SphereCollision->AddForce(LorentzForce, "None", true);
 }
 
 void AParticalBase::UpdateElectricForce(FVector Strength)
 {
-	// strength to force
 	ElectricForce = Charge * Strength;
 }
 
@@ -72,6 +73,23 @@ void AParticalBase::UpdateInitImpulse(float Impulse)
 
 	SpeedVector.Set(InitImpulse, 0.0, 0.0);
 	SphereCollision->AddImpulse(SpeedVector, "None", true);
+}
+
+void AParticalBase::UpdateLorentzForce()
+{
+	LorentzForce = VectorMultiply(MagneticInduction, SphereCollision->GetComponentVelocity());
+	LorentzForce *= Charge;
+}
+
+FVector AParticalBase::VectorMultiply(FVector a, FVector b)
+{
+	FVector res;
+
+	res.X = a.Y * b.Z - a.Z * b.Y;
+	res.Y = a.X * b.Z - a.Z * b.X;
+	res.Z = a.X * b.Y - a.Y * b.X;
+
+	return res;
 }
 /* Depricated
 void AParticalBase::AddTrail()
