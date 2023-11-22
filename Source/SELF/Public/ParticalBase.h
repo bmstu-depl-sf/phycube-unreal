@@ -6,6 +6,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Components/SphereComponent.h"
+#include "ParticleHelper.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ParticleDefinitions.h"
 #include "ParticalBase.generated.h"
 
 
@@ -26,12 +31,17 @@ public:
 	void UpdateElectricForce(FVector Strength);
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
 	void UpdateInitImpulse(float Impulse);
-	/* Depricated
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//bool IsTrailOn;
-	//UPROPERTY(EditDefaultsOnly, Category = "Partical Parameters")
-	//TSubclassOf<AActor> TrailClass;
-	*/
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	void SetPaused(bool Paused);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsTrailOn;
+
+	UPROPERTY(EditDefaultsOnly, Category = Pawn)
+	UParticleSystem* TrailPS;
+	
+	class UParticleSystemComponent* TrailComponent;
+	
 protected:
 
 	virtual void BeginPlay() override;
@@ -43,15 +53,14 @@ protected:
 
 	UFUNCTION()
 	void UpdateLorentzForce();
-	/* Depricated
-	//UFUNCTION()
-	//	void AddTrail();
 
-	//virtual void Destroyed() override;
-	*/
+	UFUNCTION()
+	void AddTrail();
+
+	virtual void Destroyed() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USphereComponent *SphereCollision;
+	USphereComponent* SphereCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitImpulse;
@@ -71,14 +80,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Charge;
 
-	/* Depricated
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	//float TrailTimer;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float TrailTimer;
 
-	//FVector CurrentPosition;
+	FVector CurrentPosition;
+	FTimerHandle TrailTimerHandle;
 
-	//TArray<AActor*> Trails;
+	TArray<UParticleSystemComponent*> TrailArray;
 
-	//FTimerHandle TrailTimerHandle;
-	*/
+	bool IsPaused;
+	FVector OldVelocity;
+	FVector OldAcceleration;
 };

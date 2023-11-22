@@ -2,9 +2,15 @@
 
 #include "ParticalBase.h"
 #include "HiddenWall.h"
+#include "ParticleHelper.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ParticleDefinitions.h"
 //#include "Trail.h"
 
 #define MASS_INDEX 1e-12
+#define VZERO FVector(0,0,0)
 
 // Sets default values
 AParticalBase::AParticalBase()
@@ -25,6 +31,11 @@ AParticalBase::AParticalBase()
 
 	SphereCollision->BodyInstance.bOverrideMass = true;
 	SphereCollision->BodyInstance.SetMassOverride(Mass);
+
+	TrailComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Trail"));
+	TrailComponent->SetupAttachment(RootComponent);
+
+	IsPaused = false;
 }
 
 // Called when the game starts or when spawned
@@ -34,11 +45,9 @@ void AParticalBase::BeginPlay()
 
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AParticalBase::OnOverlapBegin);
 
-	/* Depricated
-	//CurrentPosition = GetActorLocation();
+	CurrentPosition = GetActorLocation();
 
-	//GetWorldTimerManager().SetTimer(TrailTimerHandle, this, &AParticalBase::AddTrail, TrailTimer, true);
-	*/
+	GetWorldTimerManager().SetTimer(TrailTimerHandle, this, &AParticalBase::AddTrail, TrailTimer, true);
 }
 
 // Called every frame
@@ -46,9 +55,12 @@ void AParticalBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SphereCollision->AddForce(ElectricForce, "None", true);
-	UpdateLorentzForce();
-	SphereCollision->AddForce(LorentzForce, "None", true);
+	if (!IsPaused)
+	{
+		SphereCollision->AddForce(ElectricForce, "None", true);
+		UpdateLorentzForce();
+		SphereCollision->AddForce(LorentzForce, "None", true);
+	}
 }
 
 void AParticalBase::UpdateElectricForce(FVector Strength)
@@ -91,7 +103,7 @@ FVector AParticalBase::VectorMultiply(FVector a, FVector b)
 
 	return res;
 }
-/* Depricated
+
 void AParticalBase::AddTrail()
 {
 	if (!IsTrailOn)
@@ -100,30 +112,48 @@ void AParticalBase::AddTrail()
 		return;
 	}
 	
-
-	FVector PreviousPosition;
-	ATrail* trail;
-
-	PreviousPosition = CurrentPosition;
+	FVector PreviousPosition = CurrentPosition;
 	CurrentPosition = GetActorLocation();
-
-	trail = GetWorld()->SpawnActor<ATrail>(TrailClass, GetActorTransform());
-	
-	if (trail != nullptr)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("The Actor's name is"));
-		//trail->SetPoints(PreviousPosition, CurrentPosition);
-		//Trails.Add(tmp);
-	}
+	TrailComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TrailPS, GetActorTransform());
+	TrailComponent->SetBeamSourcePoint(0, PreviousPosition, 0);
+	TrailComponent->SetBeamTargetPoint(0, CurrentPosition, 0);
+	TrailArray.Add(TrailComponent);
 }
+
 
 void AParticalBase::Destroyed()
 {
 	GetWorldTimerManager().ClearTimer(TrailTimerHandle);
 
-	for (size_t i = 0; i < Trails.Num(); i++)
+	for (size_t i = 0; i < TrailArray.Num(); i++)
 	{
-		Trails[i]->Destroy();
+		if (IsValid(TrailArray[i]))
+		{
+			TrailArray[i]->DeactivateSystem();
+			TrailArray[i]->DestroyComponent();
+		}
+	}
+	TrailArray.Empty();
+}
+
+void AParticalBase::SetPaused(bool Paused)
+{
+	if (Paused)
+	{
+		IsPaused = Paused;
+		GetWorldTimerManager().ClearTimer(TrailTimerHandle);
+		OldVelocity = SphereCollision->GetPhysicsLinearVelocity();
+		SphereCollision->SetPhysicsLinearVelocity(VZERO);
+		SphereCollision->SetSimulatePhysics(false);
+	}
+	else
+	{
+		IsPaused = Paused;
+		GetWorldTimerManager().SetTimer(TrailTimerHandle, this, &AParticalBase::AddTrail, TrailTimer, true);
+		SphereCollision->SetSimulatePhysics(true);
+		SphereCollision->SetPhysicsLinearVelocity(OldVelocity);
+
+		if (SphereCollision->GetComponentVelocity() == VZERO)
+			UpdateInitImpulse(InitImpulse);
 	}
 }
-*/
