@@ -38,6 +38,16 @@ AParticalBase::AParticalBase()
 	IsPaused = false;
 }
 
+void AParticalBase::SetUp(bool IsTrailOn, float InitImpulse, float Mass, float Charge, float TrailTimer)
+{
+	this->IsTrailOn = IsTrailOn;
+	this->InitImpulse = InitImpulse;
+	this->Mass = Mass;
+	SphereCollision->BodyInstance.SetMassOverride(Mass);
+	this->Charge = Charge;
+	this->TrailTimer = TrailTimer;
+}
+
 // Called when the game starts or when spawned
 void AParticalBase::BeginPlay()
 {

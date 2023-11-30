@@ -28,6 +28,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	void SetUp(bool IsTrailOn, float InitImpulse, float Mass, float Charge, float TrailTimer);
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
 	void UpdateElectricForce(FVector Strength);
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
 	void UpdateInitImpulse(float Impulse);

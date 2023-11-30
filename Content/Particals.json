@@ -1,0 +1,29 @@
+{
+    "particals" :
+    [
+        {
+            "name" : "electron",
+            "trail" : true,
+            "impulse" : 1000,
+            "mass" : 9.1,
+            "charge" : -1.6,
+            "timer" : 0.025,
+            "rate" : 0.5,
+            "red" : 0,
+            "green" : 0,
+            "blue" : 1
+        },
+        {
+            "name" : "proton",
+            "trail" : true,
+            "impulse" : 1000,
+            "mass" : 16000,
+            "charge" : 1.6,
+            "timer" : 0.025,
+            "rate" : 0.6,
+            "red" : 1,
+            "green" : 0,
+            "blue" : 0
+        }
+    ]
+}
