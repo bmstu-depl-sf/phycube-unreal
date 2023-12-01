@@ -30,9 +30,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
 	void UpdateElectricForce(FVector Strength);
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
-	void UpdateInitImpulse(float Impulse);
+	void UpdateInitImpulse(FVector Impulse);
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
 	void SetPaused(bool Paused);
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	float GetMassIndex();
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	void UpdateMass(float Mass);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsTrailOn;
@@ -63,7 +67,7 @@ protected:
 	USphereComponent* SphereCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InitImpulse;
+	FVector InitImpulse;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector ElectricForce;
@@ -82,6 +86,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float TrailTimer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float MassInElectron;
 
 	FVector CurrentPosition;
 	FTimerHandle TrailTimerHandle;

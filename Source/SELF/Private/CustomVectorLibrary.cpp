@@ -34,3 +34,39 @@ FVector UCustomVectorLibrary::ChangeDirectionByCharge(FVector ElectricForce, flo
 
 	return ElectricForce;
 }
+
+TArray<int> UCustomVectorLibrary::GenerateRandomIntArray(int Size, int Min, int Max)
+{
+	TArray<int> RandomArray;
+	int tmp;
+
+	if (FMath::Abs(Max - Min + 1) < Size)
+		return RandomArray;
+
+	for (int i = 0; i < Size; i++)
+	{
+		tmp = FMath::RandRange(Min, Max);
+
+		while (IsIntInArray(RandomArray, tmp))
+		{
+			tmp = FMath::RandRange(Min, Max);
+		}
+
+		RandomArray.Add(tmp);
+	}
+
+	return RandomArray;
+}
+
+bool UCustomVectorLibrary::IsIntInArray(TArray<int> Array, int Element)
+{
+	bool IsFound = false;
+
+	for (size_t i = 0; (i < Array.Num()) && (!IsFound); i++)
+	{
+		if (Array[i] == Element)
+			IsFound = true;
+	}
+
+	return IsFound;
+}

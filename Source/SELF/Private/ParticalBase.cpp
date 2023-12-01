@@ -9,7 +9,7 @@
 #include "ParticleDefinitions.h"
 //#include "Trail.h"
 
-#define MASS_INDEX 1e-12
+#define MASS_INDEX 1e-6
 #define VZERO FVector(0,0,0)
 
 // Sets default values
@@ -66,6 +66,7 @@ void AParticalBase::Tick(float DeltaTime)
 void AParticalBase::UpdateElectricForce(FVector Strength)
 {
 	ElectricForce = Charge * Strength;
+	ElectricForce /= MassInElectron;
 }
 
 void AParticalBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -78,19 +79,17 @@ void AParticalBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 	}
 }
 
-void AParticalBase::UpdateInitImpulse(float Impulse)
+void AParticalBase::UpdateInitImpulse(FVector Impulse)
 {
 	InitImpulse = Impulse;
-	FVector SpeedVector;
-
-	SpeedVector.Set(InitImpulse, 0.0, 0.0);
-	SphereCollision->AddImpulse(SpeedVector, "None", true);
+	SphereCollision->AddImpulse(InitImpulse, "None", true);
 }
 
 void AParticalBase::UpdateLorentzForce()
 {
 	LorentzForce = VectorMultiply(MagneticInduction, SphereCollision->GetComponentVelocity());
 	LorentzForce *= Charge;
+	LorentzForce /= MassInElectron;
 }
 
 FVector AParticalBase::VectorMultiply(FVector a, FVector b)
@@ -156,4 +155,16 @@ void AParticalBase::SetPaused(bool Paused)
 		if (SphereCollision->GetComponentVelocity() == VZERO)
 			UpdateInitImpulse(InitImpulse);
 	}
+}
+
+float AParticalBase::GetMassIndex()
+{
+	return MASS_INDEX;
+}
+
+void AParticalBase::UpdateMass(float Mass)
+{
+	this->Mass = Mass;
+	SphereCollision->BodyInstance.bOverrideMass = true;
+	SphereCollision->BodyInstance.SetMassOverride(Mass);
 }
