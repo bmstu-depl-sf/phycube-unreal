@@ -16,9 +16,9 @@ class SELF_API AOptimizedGameModeBase : public AGameModeBase
 
 public:
 		UFUNCTION(BlueprintCallable, Category = "GraphicAPI")
-		virtual void UnlitModeOn();
+			virtual void UnlitModeOn();
 		UFUNCTION(BlueprintCallable, Category = "GraphicAPI")
-		virtual void UnlitModeOff();
+			virtual void UnlitModeOff();
 
 protected:
 		virtual void BeginPlay() override;

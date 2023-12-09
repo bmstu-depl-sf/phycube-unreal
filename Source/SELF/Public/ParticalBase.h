@@ -1,10 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+// All characteristcs are multilply on 1e19
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Components/SphereComponent.h"
+#include "ParticleHelper.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ParticleDefinitions.h"
 #include "ParticalBase.generated.h"
 
 
@@ -22,58 +28,74 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
-	void UpdateElectricForce(FVector Force);
+	void UpdateElectricForce(FVector Strength);
 	UFUNCTION(BlueprintCallable, Category = "Partical Base")
-	void UpdateInitSpeed(float Speed);
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//bool IsTrailOn;
-	//UPROPERTY(EditDefaultsOnly, Category = "Partical Parameters")
-	//TSubclassOf<AActor> TrailClass;
+	void UpdateInitImpulse(FVector Impulse);
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	void SetPaused(bool Paused);
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	float GetMassIndex();
+	UFUNCTION(BlueprintCallable, Category = "Partical Base")
+	void UpdateMass(float Mass);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsTrailOn;
+
+	UPROPERTY(EditDefaultsOnly, Category = Pawn)
+	UParticleSystem* TrailPS;
+	
+	class UParticleSystemComponent* TrailComponent;
+	
 protected:
-	UFUNCTION()
-	FVector ChangeDirectionByCharge(FVector ElectricForce, float Sight);
-
-	UFUNCTION()
-	FVector AddMassOnVector(FVector Force);
 
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-		void AddMovement(float LSpeed);
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		FVector VectorMultiply(FVector a, FVector b);
 
 	UFUNCTION()
-		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void UpdateLorentzForce();
 
-	//UFUNCTION()
-	//	void AddTrail();
+	UFUNCTION()
+	void AddTrail();
 
-	//virtual void Destroyed() override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USphereComponent *SphereCollision;
+	virtual void Destroyed() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InitSpeed;
+	USphereComponent* SphereCollision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector InitImpulse;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector ElectricForce;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector LorentzForce;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector MagneticInduction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float Mass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Charge;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float Sight;
+	float TrailTimer;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float Mass;
+	float MassInElectron;
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	//float TrailTimer;
+	FVector CurrentPosition;
+	FTimerHandle TrailTimerHandle;
 
-	//FVector CurrentPosition;
+	TArray<UParticleSystemComponent*> TrailArray;
 
-	//TArray<AActor*> Trails;
-
-	//FTimerHandle TrailTimerHandle;
+	bool IsPaused;
+	FVector OldVelocity;
+	FVector OldAcceleration;
 };
